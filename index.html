@@ -530,7 +530,8 @@ function renderTimeView(active) {
 
   const inbox = active.filter(t => t.category === 'inbox');
   const waitingCat = active.filter(t => t.category === 'waiting');
-  const rest = active.filter(t => t.category !== 'inbox' && t.category !== 'waiting');
+  const paymentCat = active.filter(t => t.category === 'payment');
+  const rest = active.filter(t => t.category !== 'inbox' && t.category !== 'waiting' && t.category !== 'payment');
 
   const todayItems = rest.filter(t => t.due_date <= today);
   const tomorrowItems = rest.filter(t => t.due_date === tomorrow);
@@ -544,6 +545,10 @@ function renderTimeView(active) {
   }
 
   html += renderSection('sec-today', '🔴', `今日（${formatDate(today)}）`, todayItems.length, todayItems);
+
+  if (paymentCat.length > 0) {
+    html += renderSection('sec-payment', '💰', '付款', paymentCat.length, paymentCat);
+  }
 
   if (waitingCat.length > 0) {
     html += renderSection('sec-waiting', '📌', '等回复', waitingCat.length, waitingCat);
