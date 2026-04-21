@@ -826,8 +826,10 @@ document.getElementById('btn-modal-save').addEventListener('click', async () => 
     render();
   }
 
+  const saveId = editingTodoId;
   closeModal();
-  await db.from('todos').update(updates).eq('id', editingTodoId);
+  const { error } = await db.from('todos').update(updates).eq('id', saveId);
+  if (error) alert('保存失败: ' + error.message);
 });
 
 // 删除
