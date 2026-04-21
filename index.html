@@ -31,9 +31,7 @@
     -webkit-tap-highlight-color: transparent;
   }
 
-  /* ===== 主应用 ===== */
   #app {
-    display: none;
     max-width: 640px;
     margin: 0 auto;
     padding: 16px;
@@ -48,378 +46,234 @@
     margin-bottom: 16px;
   }
 
-  .header h1 {
-    font-size: 22px;
-    font-weight: 700;
-  }
+  .header h1 { font-size: 22px; font-weight: 700; }
 
-  .header-actions {
-    display: flex;
-    gap: 8px;
-  }
+  .header-actions { display: flex; gap: 8px; }
 
   .btn-icon {
-    width: 36px;
-    height: 36px;
+    width: 36px; height: 36px;
     border: none;
     background: var(--card);
     color: var(--text-dim);
     border-radius: 8px;
     font-size: 18px;
     cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    display: flex; align-items: center; justify-content: center;
   }
-
   .btn-icon:active { opacity: 0.7; }
 
   /* 收集箱输入 */
-  .inbox-bar {
-    display: flex;
-    gap: 8px;
-    margin-bottom: 16px;
-  }
+  .inbox-bar { display: flex; gap: 8px; margin-bottom: 16px; }
 
   .inbox-bar input {
-    flex: 1;
-    padding: 10px 14px;
-    font-size: 15px;
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    color: var(--text);
-    outline: none;
+    flex: 1; padding: 10px 14px; font-size: 15px;
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: var(--radius); color: var(--text); outline: none;
   }
-
-  .inbox-bar input:focus {
-    border-color: var(--accent);
-  }
+  .inbox-bar input:focus { border-color: var(--accent); }
 
   .inbox-bar button {
-    padding: 10px 16px;
-    font-size: 15px;
-    background: var(--accent);
-    color: #fff;
-    border: none;
-    border-radius: var(--radius);
-    cursor: pointer;
-    white-space: nowrap;
+    padding: 10px 16px; font-size: 15px;
+    background: var(--accent); color: #fff;
+    border: none; border-radius: var(--radius);
+    cursor: pointer; white-space: nowrap;
   }
-
   .inbox-bar button:active { opacity: 0.8; }
 
   /* 视图 Tab */
   .view-tabs {
-    display: flex;
-    gap: 4px;
-    margin-bottom: 16px;
-    background: var(--card);
-    border-radius: var(--radius);
-    padding: 3px;
+    display: flex; gap: 4px; margin-bottom: 16px;
+    background: var(--card); border-radius: var(--radius); padding: 3px;
   }
 
   .view-tab {
-    flex: 1;
-    padding: 8px;
-    font-size: 14px;
-    text-align: center;
-    border: none;
-    background: transparent;
-    color: var(--text-dim);
-    border-radius: 8px;
-    cursor: pointer;
+    flex: 1; padding: 8px; font-size: 14px; text-align: center;
+    border: none; background: transparent; color: var(--text-dim);
+    border-radius: 8px; cursor: pointer;
   }
-
-  .view-tab.active {
-    background: var(--accent);
-    color: #fff;
-  }
+  .view-tab.active { background: var(--accent); color: #fff; }
 
   /* 分组标题 */
   .section-header {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    margin: 20px 0 8px 0;
-    font-size: 15px;
-    font-weight: 600;
-    color: var(--text-dim);
+    display: flex; align-items: center; gap: 8px;
+    margin: 20px 0 8px 0; font-size: 15px; font-weight: 600;
+    color: var(--text-dim); cursor: pointer; user-select: none;
   }
 
-  .section-header .emoji {
-    font-size: 16px;
+  .section-header .arrow {
+    font-size: 12px; transition: transform 0.2s; display: inline-block;
   }
+  .section-header.collapsed .arrow { transform: rotate(-90deg); }
+
+  .section-header .emoji { font-size: 16px; }
 
   .section-header .count {
-    font-size: 12px;
-    background: var(--border);
-    padding: 1px 7px;
-    border-radius: 10px;
-    color: var(--text-dim);
+    font-size: 12px; background: var(--border);
+    padding: 1px 7px; border-radius: 10px; color: var(--text-dim);
   }
+
+  .section-items { overflow: hidden; }
+  .section-items.collapsed { display: none; }
 
   /* 待办卡片 */
   .todo-item {
-    display: flex;
-    align-items: flex-start;
-    gap: 10px;
-    padding: 12px;
-    background: var(--card);
-    border-radius: var(--radius);
-    margin-bottom: 6px;
+    display: flex; align-items: flex-start; gap: 10px;
+    padding: 12px; background: var(--card);
+    border-radius: var(--radius); margin-bottom: 6px;
     transition: opacity 0.2s;
   }
+  .todo-item.done { opacity: 0.4; }
 
-  .todo-item.completed {
-    opacity: 0.4;
+  /* 状态圆点 */
+  .status-dot {
+    width: 14px; height: 14px; min-width: 14px;
+    border-radius: 50%; cursor: pointer;
+    margin-top: 3px; position: relative;
+    border: 2px solid transparent;
   }
 
-  .todo-checkbox {
-    width: 22px;
-    height: 22px;
-    min-width: 22px;
-    border: 2px solid var(--border);
-    border-radius: 6px;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-top: 1px;
-    transition: all 0.15s;
-  }
-
-  .todo-checkbox:hover {
-    border-color: var(--accent);
-  }
-
-  .todo-checkbox.checked {
-    background: var(--green);
-    border-color: var(--green);
-  }
-
-  .todo-checkbox.checked::after {
-    content: "✓";
-    color: #fff;
-    font-size: 13px;
-    font-weight: 700;
-  }
-
-  .todo-content {
-    flex: 1;
-    min-width: 0;
-  }
+  .todo-content { flex: 1; min-width: 0; }
 
   .todo-title {
-    font-size: 15px;
-    line-height: 1.4;
-    word-break: break-word;
+    font-size: 15px; line-height: 1.4; word-break: break-word;
+    cursor: pointer;
   }
+  .todo-title:hover { color: var(--accent); }
 
   .todo-meta {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 6px;
-    margin-top: 4px;
-    font-size: 12px;
-    color: var(--text-dim);
+    display: flex; flex-wrap: wrap; gap: 6px;
+    margin-top: 4px; font-size: 12px; color: var(--text-dim);
   }
 
-  .tag {
-    padding: 1px 7px;
-    border-radius: 4px;
-    font-size: 11px;
-  }
-
+  .tag { padding: 1px 7px; border-radius: 4px; font-size: 11px; }
   .tag-date { background: #1e3a5f; color: var(--accent); }
   .tag-amount { background: #3d2e10; color: var(--orange); }
   .tag-supplier { background: #2d1f3d; color: var(--purple); }
   .tag-waiting { background: #3d1f2e; color: var(--pink); }
   .tag-inbox { background: #3d3d10; color: var(--yellow); }
-
-  .todo-actions {
-    display: flex;
-    gap: 4px;
-  }
+  .tag-status { padding: 1px 7px; border-radius: 4px; font-size: 11px; }
 
   .btn-small {
-    padding: 4px 8px;
-    font-size: 12px;
-    background: var(--border);
-    color: var(--text-dim);
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
+    padding: 4px 8px; font-size: 12px;
+    background: var(--border); color: var(--text-dim);
+    border: none; border-radius: 6px; cursor: pointer;
   }
-
   .btn-small:active { opacity: 0.7; }
 
-  /* 已完成折叠 */
-  .completed-toggle {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    margin-top: 24px;
-    padding: 10px 0;
-    font-size: 14px;
-    color: var(--text-dim);
-    cursor: pointer;
-    border: none;
-    background: none;
-    width: 100%;
-    text-align: left;
+  /* 已完成/已取消折叠 */
+  .done-toggle {
+    display: flex; align-items: center; gap: 6px;
+    margin-top: 24px; padding: 10px 0;
+    font-size: 14px; color: var(--text-dim);
+    cursor: pointer; border: none; background: none;
+    width: 100%; text-align: left;
   }
-
-  .completed-toggle .arrow {
-    transition: transform 0.2s;
-  }
-
-  .completed-toggle.open .arrow {
-    transform: rotate(90deg);
-  }
-
-  .completed-list {
-    display: none;
-  }
-
-  .completed-list.open {
-    display: block;
-  }
+  .done-toggle .arrow { transition: transform 0.2s; display: inline-block; }
+  .done-toggle.open .arrow { transform: rotate(90deg); }
+  .done-list { display: none; }
+  .done-list.open { display: block; }
 
   /* 底部 */
   .footer {
-    text-align: center;
-    padding: 20px;
-    color: var(--text-dim);
-    font-size: 12px;
+    text-align: center; padding: 20px;
+    color: var(--text-dim); font-size: 12px;
   }
 
-  .footer button {
-    background: none;
-    border: none;
-    color: var(--red);
-    font-size: 12px;
-    cursor: pointer;
-    text-decoration: underline;
+  /* ===== 状态选择菜单 ===== */
+  .status-menu {
+    position: fixed; z-index: 200;
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 10px; padding: 6px 0;
+    min-width: 140px; box-shadow: 0 8px 24px rgba(0,0,0,0.5);
   }
+  .status-menu-item {
+    display: flex; align-items: center; gap: 8px;
+    padding: 8px 14px; cursor: pointer; font-size: 14px;
+    color: var(--text);
+  }
+  .status-menu-item:hover { background: var(--border); }
+  .status-menu-item .dot {
+    width: 10px; height: 10px; border-radius: 50%; display: inline-block;
+  }
+  .status-menu-item.active { font-weight: 600; }
 
-  /* ===== 分类弹窗 ===== */
+  /* ===== 弹窗 ===== */
   .modal-overlay {
-    display: none;
-    position: fixed;
-    inset: 0;
-    background: rgba(0,0,0,0.6);
-    z-index: 100;
-    align-items: flex-end;
-    justify-content: center;
+    display: none; position: fixed; inset: 0;
+    background: rgba(0,0,0,0.6); z-index: 100;
+    align-items: flex-end; justify-content: center;
   }
-
-  .modal-overlay.open {
-    display: flex;
-  }
+  .modal-overlay.open { display: flex; }
 
   .modal {
-    background: var(--card);
-    border-radius: 16px 16px 0 0;
-    padding: 20px;
-    width: 100%;
-    max-width: 640px;
-    max-height: 80vh;
-    overflow-y: auto;
+    background: var(--card); border-radius: 16px 16px 0 0;
+    padding: 20px; width: 100%; max-width: 640px;
+    max-height: 85vh; overflow-y: auto;
   }
 
-  .modal h3 {
-    font-size: 17px;
-    margin-bottom: 16px;
-  }
+  .modal h3 { font-size: 17px; margin-bottom: 16px; }
 
-  .form-group {
-    margin-bottom: 14px;
-  }
-
+  .form-group { margin-bottom: 14px; }
   .form-group label {
-    display: block;
-    font-size: 13px;
-    color: var(--text-dim);
-    margin-bottom: 5px;
+    display: block; font-size: 13px;
+    color: var(--text-dim); margin-bottom: 5px;
   }
-
   .form-group input,
-  .form-group select {
-    width: 100%;
-    padding: 10px 12px;
-    font-size: 15px;
-    background: var(--bg);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    color: var(--text);
-    outline: none;
+  .form-group select,
+  .form-group textarea {
+    width: 100%; padding: 10px 12px; font-size: 15px;
+    background: var(--bg); border: 1px solid var(--border);
+    border-radius: 8px; color: var(--text); outline: none;
+    font-family: inherit;
   }
-
-  .form-group select {
-    -webkit-appearance: none;
-    appearance: none;
-  }
-
+  .form-group textarea { min-height: 80px; resize: vertical; }
+  .form-group select { -webkit-appearance: none; appearance: none; }
   .form-group input:focus,
-  .form-group select:focus {
-    border-color: var(--accent);
-  }
+  .form-group select:focus,
+  .form-group textarea:focus { border-color: var(--accent); }
 
-  .modal-actions {
-    display: flex;
-    gap: 8px;
-    margin-top: 16px;
-  }
-
+  .modal-actions { display: flex; gap: 8px; margin-top: 16px; }
   .modal-actions button {
-    flex: 1;
-    padding: 12px;
-    font-size: 15px;
-    border: none;
-    border-radius: var(--radius);
-    cursor: pointer;
+    flex: 1; padding: 12px; font-size: 15px;
+    border: none; border-radius: var(--radius); cursor: pointer;
   }
+  .btn-cancel { background: var(--border); color: var(--text); }
+  .btn-save { background: var(--accent); color: #fff; }
+  .btn-delete { background: var(--red); color: #fff; }
 
-  .btn-cancel {
-    background: var(--border);
-    color: var(--text);
-  }
+  .dynamic-fields { display: none; }
+  .dynamic-fields.show { display: block; }
 
-  .btn-save {
-    background: var(--accent);
-    color: #fff;
-  }
-
-  /* 动态字段 */
-  .dynamic-fields {
-    display: none;
-  }
-
-  .dynamic-fields.show {
-    display: block;
-  }
-
-  /* 空状态 */
   .empty-hint {
-    text-align: center;
-    padding: 40px 20px;
-    color: var(--text-dim);
-    font-size: 14px;
+    text-align: center; padding: 40px 20px;
+    color: var(--text-dim); font-size: 14px;
   }
 
-  /* 加载 */
   .loading {
-    text-align: center;
-    padding: 40px;
-    color: var(--text-dim);
+    text-align: center; padding: 40px; color: var(--text-dim);
+  }
+
+  /* 状态行样式 */
+  .form-status-row {
+    display: flex; flex-wrap: wrap; gap: 8px;
+  }
+  .form-status-btn {
+    display: flex; align-items: center; gap: 5px;
+    padding: 6px 12px; border-radius: 16px;
+    border: 2px solid var(--border); background: transparent;
+    color: var(--text-dim); font-size: 13px; cursor: pointer;
+  }
+  .form-status-btn.active {
+    border-color: currentColor; color: var(--text); font-weight: 600;
+  }
+  .form-status-btn .dot {
+    width: 8px; height: 8px; border-radius: 50%;
   }
 </style>
 </head>
 <body>
 
-<!-- 主应用 -->
-<div id="app" style="display:block">
+<div id="app">
   <!-- 顶栏 -->
   <div class="header">
     <h1>待办</h1>
@@ -445,21 +299,27 @@
     <div class="loading">加载中...</div>
   </div>
 
-  <!-- 已完成 -->
-  <button class="completed-toggle" id="completed-toggle">
+  <!-- 已完成/已取消 -->
+  <button class="done-toggle" id="done-toggle">
     <span class="arrow">▶</span>
-    <span>已完成 (<span id="completed-count">0</span>)</span>
+    <span>已完成/已取消 (<span id="done-count">0</span>)</span>
   </button>
-  <div class="completed-list" id="completed-list"></div>
+  <div class="done-list" id="done-list"></div>
 
-  <!-- 底部 -->
   <div class="footer">Gundamit 待办</div>
 </div>
 
-<!-- 分类/编辑弹窗 -->
+<!-- 详情弹窗 -->
 <div class="modal-overlay" id="modal-overlay">
   <div class="modal">
-    <h3 id="modal-title">分类待办</h3>
+    <h3 id="modal-title">编辑待办</h3>
+
+    <!-- 状态选择 -->
+    <div class="form-group">
+      <label>状态</label>
+      <div class="form-status-row" id="form-status-row"></div>
+    </div>
+
     <div class="form-group">
       <label>类型</label>
       <select id="form-category">
@@ -471,17 +331,20 @@
         <option value="project">🔧 项目</option>
       </select>
     </div>
+
     <div class="form-group">
       <label>标题</label>
       <input type="text" id="form-title">
     </div>
+
     <div class="form-group">
       <label>日期</label>
       <input type="date" id="form-date">
     </div>
+
     <div class="form-group">
       <label>备注</label>
-      <input type="text" id="form-note" placeholder="可选">
+      <textarea id="form-note" placeholder="可选，支持多行"></textarea>
     </div>
 
     <!-- 付款字段 -->
@@ -513,6 +376,7 @@
     </div>
 
     <div class="modal-actions">
+      <button class="btn-delete" id="btn-modal-delete">删除</button>
       <button class="btn-cancel" id="btn-modal-cancel">取消</button>
       <button class="btn-save" id="btn-modal-save">保存</button>
     </div>
@@ -528,11 +392,50 @@ const SUPABASE_URL = 'https://qxfxcrjjinbmotdavgss.supabase.co';
 const SUPABASE_ANON_KEY = 'sb_publishable_iBsA0sLI-mJqaHzGe0P7vQ_cp83wd-P';
 const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
+// ===== 状态常量 =====
+const STATUS_CONFIG = {
+  pending:     { label: '待办',   color: '#888',    emoji: '' },
+  in_progress: { label: '进行中', color: '#4a9eff', emoji: '' },
+  waiting:     { label: '等回复', color: '#f06595', emoji: '' },
+  paused:      { label: '暂停',   color: '#ffa94d', emoji: '' },
+  shelved:     { label: '搁置',   color: '#555',    emoji: '' },
+  completed:   { label: '完成',   color: '#51cf66', emoji: '' },
+  cancelled:   { label: '取消',   color: '#ff6b6b', emoji: '' },
+};
+
+const ACTIVE_STATUSES = ['pending', 'in_progress', 'waiting', 'paused', 'shelved'];
+const DONE_STATUSES = ['completed', 'cancelled'];
+
+const CATEGORY_INFO = {
+  inbox:    { emoji: '📥', label: '收集箱' },
+  payment:  { emoji: '💰', label: '付款' },
+  waiting:  { emoji: '📌', label: '等回复' },
+  product:  { emoji: '📦', label: '产品' },
+  followup: { emoji: '📋', label: '跟进' },
+  project:  { emoji: '🔧', label: '项目' },
+};
+
 // ===== 状态 =====
 let todos = [];
 let currentView = 'time';
 let editingTodoId = null;
+let selectedFormStatus = 'pending';
 
+// 折叠状态 (localStorage)
+function getCollapseState() {
+  try { return JSON.parse(localStorage.getItem('todo_collapse') || '{}'); }
+  catch { return {}; }
+}
+function setCollapseState(key, collapsed) {
+  const state = getCollapseState();
+  state[key] = collapsed;
+  localStorage.setItem('todo_collapse', JSON.stringify(state));
+}
+function isCollapsed(key) {
+  return getCollapseState()[key] === true;
+}
+
+// ===== 工具函数 =====
 function formatDate(dateStr) {
   if (!dateStr) return '';
   const d = new Date(dateStr + 'T00:00:00');
@@ -568,16 +471,10 @@ function endOfWeekStr() {
   return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
 }
 
-const CATEGORY_INFO = {
-  inbox:    { emoji: '📥', label: '收集箱' },
-  payment:  { emoji: '💰', label: '付款' },
-  waiting:  { emoji: '📌', label: '等回复' },
-  product:  { emoji: '📦', label: '产品' },
-  followup: { emoji: '📋', label: '跟进' },
-  project:  { emoji: '🔧', label: '项目' },
-};
-
-// ===== 启动加载 =====
+function escapeHtml(str) {
+  if (!str) return '';
+  return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
 
 // ===== 数据加载 =====
 async function loadTodos() {
@@ -598,37 +495,37 @@ async function loadTodos() {
 
 // ===== 渲染 =====
 function render() {
-  const pending = todos.filter(t => t.status === 'pending');
-  const completed = todos.filter(t => t.status === 'completed');
+  const active = todos.filter(t => ACTIVE_STATUSES.includes(t.status));
+  const done = todos.filter(t => DONE_STATUSES.includes(t.status));
 
   if (currentView === 'time') {
-    renderTimeView(pending);
+    renderTimeView(active);
   } else {
-    renderCategoryView(pending);
+    renderCategoryView(active);
   }
 
-  // 已完成区
-  document.getElementById('completed-count').textContent = completed.length;
-  const completedList = document.getElementById('completed-list');
-  if (completed.length === 0) {
-    completedList.innerHTML = '';
+  // 已完成/已取消区
+  document.getElementById('done-count').textContent = done.length;
+  const doneList = document.getElementById('done-list');
+  if (done.length === 0) {
+    doneList.innerHTML = '';
   } else {
-    completedList.innerHTML = completed
-      .sort((a, b) => new Date(b.completed_at) - new Date(a.completed_at))
-      .slice(0, 20)
+    doneList.innerHTML = done
+      .sort((a, b) => new Date(b.completed_at || b.updated_at || 0) - new Date(a.completed_at || a.updated_at || 0))
+      .slice(0, 30)
       .map(t => renderTodoItem(t, true))
       .join('');
   }
 }
 
-function renderTimeView(pending) {
+function renderTimeView(active) {
   const today = todayStr();
   const tomorrow = tomorrowStr();
   const weekEnd = endOfWeekStr();
 
-  const inbox = pending.filter(t => t.category === 'inbox');
-  const waiting = pending.filter(t => t.category === 'waiting');
-  const rest = pending.filter(t => t.category !== 'inbox' && t.category !== 'waiting');
+  const inbox = active.filter(t => t.category === 'inbox');
+  const waitingCat = active.filter(t => t.category === 'waiting');
+  const rest = active.filter(t => t.category !== 'inbox' && t.category !== 'waiting');
 
   const todayItems = rest.filter(t => t.due_date <= today);
   const tomorrowItems = rest.filter(t => t.due_date === tomorrow);
@@ -638,62 +535,68 @@ function renderTimeView(pending) {
   let html = '';
 
   if (inbox.length > 0) {
-    html += renderSection('📥', '收集箱', inbox.length, inbox);
+    html += renderSection('sec-inbox', '📥', '收集箱', inbox.length, inbox);
   }
 
-  html += renderSection('🔴', `今日（${formatDate(today)}）`, todayItems.length, todayItems);
+  html += renderSection('sec-today', '🔴', `今日（${formatDate(today)}）`, todayItems.length, todayItems);
 
-  if (waiting.length > 0) {
-    html += renderSection('📌', '等回复', waiting.length, waiting);
+  if (waitingCat.length > 0) {
+    html += renderSection('sec-waiting', '📌', '等回复', waitingCat.length, waitingCat);
   }
 
   if (tomorrowItems.length > 0) {
-    html += renderSection('📦', `明天（${formatDate(tomorrow)}）`, tomorrowItems.length, tomorrowItems);
+    html += renderSection('sec-tomorrow', '📦', `明天（${formatDate(tomorrow)}）`, tomorrowItems.length, tomorrowItems);
   }
 
   if (weekItems.length > 0) {
-    html += renderSection('📋', '本周', weekItems.length, weekItems);
+    html += renderSection('sec-week', '📋', '本周', weekItems.length, weekItems);
   }
 
   if (laterItems.length > 0) {
-    html += renderSection('🔮', '更远', laterItems.length, laterItems);
+    html += renderSection('sec-later', '🔮', '更远', laterItems.length, laterItems);
   }
 
   const listEl = document.getElementById('todo-list');
   listEl.innerHTML = html || '<div class="empty-hint">没有待办事项</div>';
 }
 
-function renderCategoryView(pending) {
+function renderCategoryView(active) {
   const groups = ['inbox', 'waiting', 'payment', 'product', 'followup', 'project'];
   let html = '';
 
   for (const cat of groups) {
-    const items = pending.filter(t => t.category === cat);
+    const items = active.filter(t => t.category === cat);
     if (items.length === 0) continue;
     const info = CATEGORY_INFO[cat];
-    html += renderSection(info.emoji, info.label, items.length, items);
+    html += renderSection('sec-cat-' + cat, info.emoji, info.label, items.length, items);
   }
 
   const listEl = document.getElementById('todo-list');
   listEl.innerHTML = html || '<div class="empty-hint">没有待办事项</div>';
 }
 
-function renderSection(emoji, title, count, items) {
+function renderSection(sectionKey, emoji, title, count, items) {
+  const collapsed = isCollapsed(sectionKey);
   return `
-    <div class="section-header">
+    <div class="section-header ${collapsed ? 'collapsed' : ''}" onclick="toggleSection('${sectionKey}', this)">
+      <span class="arrow">▼</span>
       <span class="emoji">${emoji}</span>
       <span>${title}</span>
       <span class="count">${count}</span>
     </div>
-    ${items.map(t => renderTodoItem(t, false)).join('')}
+    <div class="section-items ${collapsed ? 'collapsed' : ''}" data-section="${sectionKey}">
+      ${items.map(t => renderTodoItem(t, false)).join('')}
+    </div>
   `;
 }
 
-function renderTodoItem(todo, isCompleted) {
+function renderTodoItem(todo, isDone) {
+  const sc = STATUS_CONFIG[todo.status] || STATUS_CONFIG.pending;
   let meta = '';
 
-  if (todo.category === 'inbox' && !isCompleted) {
-    meta += `<button class="btn-small" onclick="openClassify('${todo.id}')">分类</button>`;
+  // 状态标签（非 pending 的活跃状态才显示）
+  if (!isDone && todo.status !== 'pending') {
+    meta += `<span class="tag tag-status" style="background:${sc.color}22;color:${sc.color}">${sc.label}</span>`;
   }
 
   if (todo.due_date) {
@@ -701,66 +604,241 @@ function renderTodoItem(todo, isCompleted) {
   }
 
   if (todo.amount) {
-    meta += `<span class="tag tag-amount">${todo.amount}</span>`;
+    meta += `<span class="tag tag-amount">${escapeHtml(todo.amount)}</span>`;
   }
 
   if (todo.supplier) {
-    meta += `<span class="tag tag-supplier">${todo.supplier}</span>`;
+    meta += `<span class="tag tag-supplier">${escapeHtml(todo.supplier)}</span>`;
   }
 
   if (todo.waiting_for) {
     const days = todo.waiting_since ? -daysDiff(todo.waiting_since) : 0;
-    meta += `<span class="tag tag-waiting">等 ${todo.waiting_for}${days > 0 ? ` · ${days}天` : ''}</span>`;
+    meta += `<span class="tag tag-waiting">等 ${escapeHtml(todo.waiting_for)}${days > 0 ? ` · ${days}天` : ''}</span>`;
   }
 
   if (todo.next_step) {
-    meta += `<span style="color:var(--text-dim)">→ ${todo.next_step}</span>`;
+    meta += `<span style="color:var(--text-dim)">→ ${escapeHtml(todo.next_step)}</span>`;
   }
 
   if (todo.note) {
-    meta += `<span style="color:var(--text-dim)">${todo.note}</span>`;
+    const shortNote = todo.note.length > 40 ? todo.note.substring(0, 40) + '...' : todo.note;
+    meta += `<span style="color:var(--text-dim)">${escapeHtml(shortNote)}</span>`;
   }
 
-  const cat = CATEGORY_INFO[todo.category];
+  // 完成/取消状态标签
+  if (isDone) {
+    meta += `<span class="tag tag-status" style="background:${sc.color}22;color:${sc.color}">${sc.label}</span>`;
+  }
 
   return `
-    <div class="todo-item ${isCompleted ? 'completed' : ''}">
-      <div class="todo-checkbox ${isCompleted ? 'checked' : ''}" onclick="toggleTodo('${todo.id}', ${isCompleted})"></div>
+    <div class="todo-item ${isDone ? 'done' : ''}">
+      <div class="status-dot" style="background:${sc.color}" onclick="openStatusMenu(event, '${todo.id}')" title="${sc.label}"></div>
       <div class="todo-content">
-        <div class="todo-title">${escapeHtml(todo.title)}</div>
+        <div class="todo-title" onclick="openDetail('${todo.id}')">${escapeHtml(todo.title)}</div>
         <div class="todo-meta">${meta}</div>
       </div>
     </div>
   `;
 }
 
-function escapeHtml(str) {
-  if (!str) return '';
-  return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+// ===== 折叠交互 =====
+function toggleSection(sectionKey, headerEl) {
+  const collapsed = !isCollapsed(sectionKey);
+  setCollapseState(sectionKey, collapsed);
+  headerEl.classList.toggle('collapsed', collapsed);
+  const items = document.querySelector(`[data-section="${sectionKey}"]`);
+  if (items) items.classList.toggle('collapsed', collapsed);
 }
 
-// ===== 交互 =====
+// ===== 状态圆点菜单 =====
+let statusMenuEl = null;
 
-// 标记完成/恢复
-async function toggleTodo(id, currentlyCompleted) {
-  const newStatus = currentlyCompleted ? 'pending' : 'completed';
+function openStatusMenu(event, todoId) {
+  event.stopPropagation();
+  closeStatusMenu();
+
+  const todo = todos.find(t => t.id === todoId);
+  if (!todo) return;
+
+  const menu = document.createElement('div');
+  menu.className = 'status-menu';
+
+  const allStatuses = Object.entries(STATUS_CONFIG);
+  for (const [key, cfg] of allStatuses) {
+    const item = document.createElement('div');
+    item.className = 'status-menu-item' + (todo.status === key ? ' active' : '');
+    item.innerHTML = `<span class="dot" style="background:${cfg.color}"></span>${cfg.label}`;
+    item.addEventListener('click', () => {
+      changeStatus(todoId, key);
+      closeStatusMenu();
+    });
+    menu.appendChild(item);
+  }
+
+  // 定位
+  const rect = event.target.getBoundingClientRect();
+  menu.style.left = Math.min(rect.left, window.innerWidth - 160) + 'px';
+  menu.style.top = (rect.bottom + 4) + 'px';
+
+  // 如果菜单超出屏幕底部，向上弹
+  document.body.appendChild(menu);
+  const menuRect = menu.getBoundingClientRect();
+  if (menuRect.bottom > window.innerHeight) {
+    menu.style.top = (rect.top - menuRect.height - 4) + 'px';
+  }
+
+  statusMenuEl = menu;
+
+  // 点外面关闭
+  setTimeout(() => {
+    document.addEventListener('click', closeStatusMenu, { once: true });
+  }, 0);
+}
+
+function closeStatusMenu() {
+  if (statusMenuEl) {
+    statusMenuEl.remove();
+    statusMenuEl = null;
+  }
+}
+
+async function changeStatus(todoId, newStatus) {
+  const todo = todos.find(t => t.id === todoId);
+  if (!todo || todo.status === newStatus) return;
+
+  const updates = { status: newStatus };
+
+  if (DONE_STATUSES.includes(newStatus)) {
+    updates.completed_at = new Date().toISOString();
+  } else if (DONE_STATUSES.includes(todo.status)) {
+    updates.completed_at = null;
+  }
+
+  // 本地先更新
+  Object.assign(todo, updates);
+  render();
+
+  await db.from('todos').update(updates).eq('id', todoId);
+}
+
+// ===== 详情弹窗 =====
+const modalOverlay = document.getElementById('modal-overlay');
+const formCategory = document.getElementById('form-category');
+
+function buildStatusButtons() {
+  const row = document.getElementById('form-status-row');
+  row.innerHTML = '';
+  for (const [key, cfg] of Object.entries(STATUS_CONFIG)) {
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'form-status-btn' + (selectedFormStatus === key ? ' active' : '');
+    btn.style.color = selectedFormStatus === key ? cfg.color : '';
+    btn.innerHTML = `<span class="dot" style="background:${cfg.color}"></span>${cfg.label}`;
+    btn.addEventListener('click', () => {
+      selectedFormStatus = key;
+      buildStatusButtons();
+    });
+    row.appendChild(btn);
+  }
+}
+
+function openDetail(todoId) {
+  editingTodoId = todoId;
+  const todo = todos.find(t => t.id === todoId);
+  if (!todo) return;
+
+  document.getElementById('modal-title').textContent = '编辑待办';
+  selectedFormStatus = todo.status || 'pending';
+  buildStatusButtons();
+
+  formCategory.value = todo.category;
+  document.getElementById('form-title').value = todo.title;
+  document.getElementById('form-date').value = todo.due_date || todayStr();
+  document.getElementById('form-note').value = todo.note || '';
+  document.getElementById('form-amount').value = todo.amount || '';
+  document.getElementById('form-supplier').value = todo.supplier || '';
+  document.getElementById('form-waiting-for').value = todo.waiting_for || '';
+  document.getElementById('form-waiting-since').value = todo.waiting_since || todayStr();
+  document.getElementById('form-next-step').value = todo.next_step || '';
+
+  updateDynamicFields();
+  modalOverlay.classList.add('open');
+}
+
+// 兼容旧的 openClassify（收集箱分类按钮）
+function openClassify(todoId) {
+  openDetail(todoId);
+}
+
+formCategory.addEventListener('change', updateDynamicFields);
+
+function updateDynamicFields() {
+  const cat = formCategory.value;
+  document.getElementById('fields-payment').classList.toggle('show', cat === 'payment');
+  document.getElementById('fields-waiting').classList.toggle('show', cat === 'waiting');
+}
+
+document.getElementById('btn-modal-cancel').addEventListener('click', closeModal);
+modalOverlay.addEventListener('click', (e) => {
+  if (e.target === modalOverlay) closeModal();
+});
+
+function closeModal() {
+  modalOverlay.classList.remove('open');
+  editingTodoId = null;
+}
+
+// 保存
+document.getElementById('btn-modal-save').addEventListener('click', async () => {
+  if (!editingTodoId) return;
+
   const updates = {
-    status: newStatus,
-    completed_at: currentlyCompleted ? null : new Date().toISOString(),
+    status: selectedFormStatus,
+    category: formCategory.value,
+    title: document.getElementById('form-title').value.trim(),
+    due_date: document.getElementById('form-date').value || todayStr(),
+    note: document.getElementById('form-note').value.trim() || null,
+    amount: document.getElementById('form-amount').value.trim() || null,
+    supplier: document.getElementById('form-supplier').value.trim() || null,
+    waiting_for: document.getElementById('form-waiting-for').value.trim() || null,
+    waiting_since: document.getElementById('form-waiting-since').value || null,
+    next_step: document.getElementById('form-next-step').value.trim() || null,
   };
 
-  // 立即在本地更新
-  const todo = todos.find(t => t.id === id);
-  if (todo) {
-    todo.status = updates.status;
-    todo.completed_at = updates.completed_at;
+  if (!updates.title) return;
+
+  // 完成/取消状态的 completed_at
+  const oldTodo = todos.find(t => t.id === editingTodoId);
+  if (DONE_STATUSES.includes(updates.status) && oldTodo && !DONE_STATUSES.includes(oldTodo.status)) {
+    updates.completed_at = new Date().toISOString();
+  } else if (!DONE_STATUSES.includes(updates.status) && oldTodo && DONE_STATUSES.includes(oldTodo.status)) {
+    updates.completed_at = null;
+  }
+
+  // 本地先更新
+  if (oldTodo) {
+    Object.assign(oldTodo, updates);
     render();
   }
 
-  await db.from('todos').update(updates).eq('id', id);
-}
+  closeModal();
+  await db.from('todos').update(updates).eq('id', editingTodoId);
+});
 
-// 收集箱添加
+// 删除
+document.getElementById('btn-modal-delete').addEventListener('click', async () => {
+  if (!editingTodoId) return;
+  if (!confirm('确定删除这条待办？')) return;
+
+  const id = editingTodoId;
+  todos = todos.filter(t => t.id !== id);
+  render();
+  closeModal();
+
+  await db.from('todos').delete().eq('id', id);
+});
+
+// ===== 收集箱添加 =====
 document.getElementById('btn-add').addEventListener('click', addInbox);
 document.getElementById('inbox-input').addEventListener('keydown', (e) => {
   if (e.key === 'Enter') addInbox();
@@ -787,10 +865,10 @@ async function addInbox() {
   }
 }
 
-// 刷新
+// ===== 刷新 =====
 document.getElementById('btn-refresh').addEventListener('click', loadTodos);
 
-// 视图切换
+// ===== 视图切换 =====
 document.querySelectorAll('.view-tab').forEach(tab => {
   tab.addEventListener('click', () => {
     document.querySelectorAll('.view-tab').forEach(t => t.classList.remove('active'));
@@ -800,82 +878,12 @@ document.querySelectorAll('.view-tab').forEach(tab => {
   });
 });
 
-// 已完成折叠
-document.getElementById('completed-toggle').addEventListener('click', () => {
-  const toggle = document.getElementById('completed-toggle');
-  const list = document.getElementById('completed-list');
+// ===== 已完成折叠 =====
+document.getElementById('done-toggle').addEventListener('click', () => {
+  const toggle = document.getElementById('done-toggle');
+  const list = document.getElementById('done-list');
   toggle.classList.toggle('open');
   list.classList.toggle('open');
-});
-
-// ===== 分类弹窗 =====
-const modalOverlay = document.getElementById('modal-overlay');
-const formCategory = document.getElementById('form-category');
-
-function openClassify(todoId) {
-  editingTodoId = todoId;
-  const todo = todos.find(t => t.id === todoId);
-  if (!todo) return;
-
-  document.getElementById('modal-title').textContent = '分类待办';
-  formCategory.value = todo.category;
-  document.getElementById('form-title').value = todo.title;
-  document.getElementById('form-date').value = todo.due_date || todayStr();
-  document.getElementById('form-note').value = todo.note || '';
-  document.getElementById('form-amount').value = todo.amount || '';
-  document.getElementById('form-supplier').value = todo.supplier || '';
-  document.getElementById('form-waiting-for').value = todo.waiting_for || '';
-  document.getElementById('form-waiting-since').value = todo.waiting_since || todayStr();
-  document.getElementById('form-next-step').value = todo.next_step || '';
-
-  updateDynamicFields();
-  modalOverlay.classList.add('open');
-}
-
-formCategory.addEventListener('change', updateDynamicFields);
-
-function updateDynamicFields() {
-  const cat = formCategory.value;
-  document.getElementById('fields-payment').classList.toggle('show', cat === 'payment');
-  document.getElementById('fields-waiting').classList.toggle('show', cat === 'waiting');
-}
-
-document.getElementById('btn-modal-cancel').addEventListener('click', closeModal);
-modalOverlay.addEventListener('click', (e) => {
-  if (e.target === modalOverlay) closeModal();
-});
-
-function closeModal() {
-  modalOverlay.classList.remove('open');
-  editingTodoId = null;
-}
-
-document.getElementById('btn-modal-save').addEventListener('click', async () => {
-  if (!editingTodoId) return;
-
-  const updates = {
-    category: formCategory.value,
-    title: document.getElementById('form-title').value.trim(),
-    due_date: document.getElementById('form-date').value || todayStr(),
-    note: document.getElementById('form-note').value.trim() || null,
-    amount: document.getElementById('form-amount').value.trim() || null,
-    supplier: document.getElementById('form-supplier').value.trim() || null,
-    waiting_for: document.getElementById('form-waiting-for').value.trim() || null,
-    waiting_since: document.getElementById('form-waiting-since').value || null,
-    next_step: document.getElementById('form-next-step').value.trim() || null,
-  };
-
-  if (!updates.title) return;
-
-  // 本地先更新
-  const todo = todos.find(t => t.id === editingTodoId);
-  if (todo) {
-    Object.assign(todo, updates);
-    render();
-  }
-
-  closeModal();
-  await db.from('todos').update(updates).eq('id', editingTodoId);
 });
 
 // ===== 启动 =====
