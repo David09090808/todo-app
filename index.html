@@ -116,6 +116,9 @@
     font-size: 12px; background: var(--border);
     padding: 1px 7px; border-radius: 10px; color: var(--text-dim);
   }
+  .section-header .count-today {
+    background: #5f1a1a; color: var(--red); font-weight: 600;
+  }
 
   .section-items { overflow: hidden; }
   .section-items.collapsed { display: none; }
@@ -575,6 +578,11 @@ function renderCategoryTimeSection(sectionKey, emoji, title, todayItems, futureI
   const state = getCollapseState();
   const futureCollapsed = state[futureKey] === undefined ? true : state[futureKey];
 
+  // 计数：今日/总数
+  const countHtml = todayItems.length > 0
+    ? `<span class="count count-today">${todayItems.length}今日</span><span class="count">${total}</span>`
+    : `<span class="count">${total}</span>`;
+
   let itemsHtml = todayItems.map(t => renderTodoItem(t, false)).join('');
 
   if (futureItems.length > 0) {
@@ -594,7 +602,7 @@ function renderCategoryTimeSection(sectionKey, emoji, title, todayItems, futureI
       <span class="arrow">▼</span>
       <span class="emoji">${emoji}</span>
       <span>${title}</span>
-      <span class="count">${total}</span>
+      ${countHtml}
     </div>
     <div class="section-items ${collapsed ? 'collapsed' : ''}" data-section="${sectionKey}">
       ${itemsHtml}
