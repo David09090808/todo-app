@@ -525,18 +525,22 @@ function render() {
 
 function renderTimeView(active) {
   const today = todayStr();
-  const tomorrow = tomorrowStr();
-  const weekEnd = endOfWeekStr();
 
   const inbox = active.filter(t => t.category === 'inbox');
-  const waitingCat = active.filter(t => t.category === 'waiting');
-  const paymentCat = active.filter(t => t.category === 'payment');
-  const rest = active.filter(t => t.category !== 'inbox' && t.category !== 'waiting' && t.category !== 'payment');
+  const nonInbox = active.filter(t => t.category !== 'inbox');
 
-  const todayItems = rest.filter(t => t.due_date <= today);
-  const tomorrowItems = rest.filter(t => t.due_date === tomorrow);
-  const weekItems = rest.filter(t => t.due_date > tomorrow && t.due_date <= weekEnd);
-  const laterItems = rest.filter(t => t.due_date > weekEnd);
+  // 今日：所有 due_date <= today 的非 inbox 项目
+  const todayAll = nonInbox.filter(t => t.due_date <= today);
+  // 按 category 排序：payment → waiting → product → followup → project
+  const categoryOrder = ['payment', 'waiting', 'product', 'followup', 'project'];
+  todayAll.sort((a, b) => categoryOrder.indexOf(a.category) - categoryOrder.indexOf(b.category));
+
+  // 各分类的未来项目 (due_date > today)
+  const futureByCategory = {};
+  for (const cat of categoryOrder) {
+    const items = nonInbox.filter(t => t.category === cat && t.due_date > today);
+    if (items.length > 0) futureByCategory[cat] = items;
+  }
 
   let html = '';
 
@@ -544,30 +548,34 @@ function renderTimeView(active) {
     html += renderSection('sec-inbox', '📥', '收集箱', inbox.length, inbox);
   }
 
-  html += renderSection('sec-today', '🔴', `今日（${formatDate(today)}）`, todayItems.length, todayItems);
+  // 今日区 — 带分类 emoji 前缀
+  html += renderSection('sec-today', '🔴', `今日（${formatDate(today)}）`, todayAll.length, todayAll, true);
 
-  if (paymentCat.length > 0) {
-    html += renderSection('sec-payment', '💰', '付款', paymentCat.length, paymentCat);
-  }
-
-  if (waitingCat.length > 0) {
-    html += renderSection('sec-waiting', '📌', '等回复', waitingCat.length, waitingCat);
-  }
-
-  if (tomorrowItems.length > 0) {
-    html += renderSection('sec-tomorrow', '📦', `明天（${formatDate(tomorrow)}）`, tomorrowItems.length, tomorrowItems);
-  }
-
-  if (weekItems.length > 0) {
-    html += renderSection('sec-week', '📋', '本周', weekItems.length, weekItems);
-  }
-
-  if (laterItems.length > 0) {
-    html += renderSection('sec-later', '🔮', '更远', laterItems.length, laterItems);
+  // 各分类的未来区
+  for (const cat of categoryOrder) {
+    if (!futureByCategory[cat]) continue;
+    const info = CATEGORY_INFO[cat];
+    html += renderFutureSection('sec-future-' + cat, info.emoji, info.label, futureByCategory[cat]);
   }
 
   const listEl = document.getElementById('todo-list');
   listEl.innerHTML = html || '<div class="empty-hint">没有待办事项</div>';
+}
+
+function renderFutureSection(sectionKey, emoji, title, items) {
+  const state = getCollapseState();
+  const collapsed = state[sectionKey] === undefined ? true : state[sectionKey]; // 默认折叠
+  return `
+    <div class="section-header ${collapsed ? 'collapsed' : ''}" onclick="toggleSection('${sectionKey}', this)">
+      <span class="arrow">▼</span>
+      <span class="emoji">${emoji}</span>
+      <span>${title}</span>
+      <span class="count">查看更多 (${items.length})</span>
+    </div>
+    <div class="section-items ${collapsed ? 'collapsed' : ''}" data-section="${sectionKey}">
+      ${items.map(t => renderTodoItem(t, false)).join('')}
+    </div>
+  `;
 }
 
 function renderCategoryView(active) {
@@ -585,7 +593,7 @@ function renderCategoryView(active) {
   listEl.innerHTML = html || '<div class="empty-hint">没有待办事项</div>';
 }
 
-function renderSection(sectionKey, emoji, title, count, items) {
+function renderSection(sectionKey, emoji, title, count, items, showCategoryEmoji = false) {
   const collapsed = isCollapsed(sectionKey);
   return `
     <div class="section-header ${collapsed ? 'collapsed' : ''}" onclick="toggleSection('${sectionKey}', this)">
@@ -595,14 +603,20 @@ function renderSection(sectionKey, emoji, title, count, items) {
       <span class="count">${count}</span>
     </div>
     <div class="section-items ${collapsed ? 'collapsed' : ''}" data-section="${sectionKey}">
-      ${items.map(t => renderTodoItem(t, false)).join('')}
+      ${items.map(t => renderTodoItem(t, false, showCategoryEmoji)).join('')}
     </div>
   `;
 }
 
-function renderTodoItem(todo, isDone) {
+function renderTodoItem(todo, isDone, showCategoryEmoji = false) {
   const sc = STATUS_CONFIG[todo.status] || STATUS_CONFIG.pending;
   let meta = '';
+
+  // 分类 emoji 标签（今日区用）
+  if (showCategoryEmoji && CATEGORY_INFO[todo.category]) {
+    const ci = CATEGORY_INFO[todo.category];
+    meta += `<span class="tag tag-inbox">${ci.emoji} ${ci.label}</span>`;
+  }
 
   // 状态标签（非 pending 的活跃状态才显示）
   if (!isDone && todo.status !== 'pending') {
