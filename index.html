@@ -68,14 +68,17 @@
   .btn-icon:active { opacity: 0.7; }
 
   /* 收集箱输入 */
-  .inbox-bar { display: flex; gap: 8px; margin-bottom: 16px; }
+  .inbox-bar { display: flex; gap: 8px; margin-bottom: 16px; align-items: flex-end; }
 
-  .inbox-bar input {
+  .inbox-bar textarea {
     flex: 1; padding: 10px 14px; font-size: 15px;
     background: var(--card); border: 1px solid var(--border);
     border-radius: var(--radius); color: var(--text); outline: none;
+    resize: none; overflow: hidden;
+    min-height: 42px; max-height: 120px;
+    font-family: inherit; line-height: 1.4;
   }
-  .inbox-bar input:focus { border-color: var(--accent); }
+  .inbox-bar textarea:focus { border-color: var(--accent); }
 
   .inbox-bar button {
     padding: 10px 16px; font-size: 15px;
@@ -347,7 +350,7 @@
 
   <!-- 收集箱 -->
   <div class="inbox-bar">
-    <input type="text" id="inbox-input" placeholder="快速添加待办...">
+    <textarea id="inbox-input" placeholder="快速添加待办..." rows="1"></textarea>
     <button id="btn-add">添加</button>
   </div>
 
@@ -1107,8 +1110,10 @@ document.getElementById('btn-modal-delete').addEventListener('click', async () =
 
 // ===== 收集箱添加 =====
 document.getElementById('btn-add').addEventListener('click', addInbox);
-document.getElementById('inbox-input').addEventListener('keydown', (e) => {
-  if (e.key === 'Enter') addInbox();
+// textarea 自适应高度
+document.getElementById('inbox-input').addEventListener('input', function() {
+  this.style.height = 'auto';
+  this.style.height = Math.min(this.scrollHeight, 120) + 'px';
 });
 
 async function addInbox() {
@@ -1117,6 +1122,7 @@ async function addInbox() {
   if (!title) return;
 
   input.value = '';
+  input.style.height = 'auto';
 
   const newTodo = {
     category: 'inbox',
