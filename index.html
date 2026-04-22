@@ -289,6 +289,36 @@
   .form-status-btn .dot {
     width: 8px; height: 8px; border-radius: 50%;
   }
+
+  /* 已删除区 checkbox */
+  .deleted-check {
+    width: 18px; height: 18px; min-width: 18px;
+    margin-top: 2px; accent-color: var(--accent);
+    cursor: pointer;
+  }
+  .deleted-actions {
+    padding: 8px 0; gap: 8px;
+  }
+
+  /* 项目分组 */
+  .project-group-header {
+    display: flex; align-items: center; gap: 6px;
+    padding: 6px 12px; margin: 4px 0 2px 0;
+    font-size: 13px; font-weight: 600; color: var(--purple);
+    cursor: pointer; user-select: none;
+    border-radius: 6px;
+  }
+  .project-group-header:hover { background: var(--border); }
+  .project-group-header .arrow {
+    font-size: 10px; transition: transform 0.2s; display: inline-block;
+  }
+  .project-group-header.collapsed .arrow { transform: rotate(-90deg); }
+  .project-group-header .proj-count {
+    font-size: 11px; background: #2d1f3d; color: var(--purple);
+    padding: 1px 6px; border-radius: 8px; margin-left: auto;
+  }
+  .project-group-items { padding-left: 8px; }
+  .project-group-items.collapsed { display: none; }
 </style>
 </head>
 <body>
@@ -326,6 +356,17 @@
   </button>
   <div class="done-list" id="done-list"></div>
 
+  <!-- 已删除 -->
+  <button class="done-toggle" id="deleted-toggle">
+    <span class="arrow">▶</span>
+    <span>🗑️ 已删除 (<span id="deleted-count">0</span>)</span>
+  </button>
+  <div class="done-list" id="deleted-list"></div>
+  <div class="deleted-actions" id="deleted-actions" style="display:none; padding: 8px 0; display: none; gap: 8px;">
+    <button class="btn-small" id="btn-restore-selected" style="padding:8px 16px;font-size:13px;background:var(--accent);color:#fff;border-radius:8px;">恢复选中</button>
+    <button class="btn-small" id="btn-purge-selected" style="padding:8px 16px;font-size:13px;background:var(--red);color:#fff;border-radius:8px;">彻底删除选中</button>
+  </div>
+
   <div class="footer">Gundamit 待办 v2.1</div>
 </div>
 
@@ -350,6 +391,12 @@
         <option value="followup">📋 跟进</option>
         <option value="project">🔧 项目</option>
       </select>
+    </div>
+
+    <div class="form-group">
+      <label>所属项目</label>
+      <input type="text" id="form-project" list="project-list" placeholder="可选，如 lpzz供应商跟进">
+      <datalist id="project-list"></datalist>
     </div>
 
     <div class="form-group">
@@ -421,10 +468,12 @@ const STATUS_CONFIG = {
   shelved:     { label: '搁置',   color: '#555',    emoji: '' },
   completed:   { label: '完成',   color: '#51cf66', emoji: '' },
   cancelled:   { label: '取消',   color: '#ff6b6b', emoji: '' },
+  deleted:     { label: '已删除', color: '#555',    emoji: '' },
 };
 
 const ACTIVE_STATUSES = ['pending', 'in_progress', 'waiting', 'paused', 'shelved'];
 const DONE_STATUSES = ['completed', 'cancelled'];
+const DELETED_STATUSES = ['deleted'];
 
 const CATEGORY_INFO = {
   inbox:    { emoji: '📥', label: '收集箱' },
@@ -517,6 +566,7 @@ async function loadTodos() {
 function render() {
   const active = todos.filter(t => ACTIVE_STATUSES.includes(t.status));
   const done = todos.filter(t => DONE_STATUSES.includes(t.status));
+  const deleted = todos.filter(t => DELETED_STATUSES.includes(t.status));
 
   if (currentView === 'time') {
     renderTimeView(active);
@@ -535,6 +585,23 @@ function render() {
       .slice(0, 30)
       .map(t => renderTodoItem(t, true))
       .join('');
+  }
+
+  // 已删除区
+  document.getElementById('deleted-count').textContent = deleted.length;
+  const deletedList = document.getElementById('deleted-list');
+  const deletedActions = document.getElementById('deleted-actions');
+  if (deleted.length === 0) {
+    deletedList.innerHTML = '';
+    deletedActions.style.display = 'none';
+  } else {
+    deletedList.innerHTML = deleted
+      .sort((a, b) => new Date(b.updated_at || 0) - new Date(a.updated_at || 0))
+      .map(t => renderDeletedItem(t))
+      .join('');
+    // 按钮显示跟随折叠状态
+    const isOpen = document.getElementById('deleted-list').classList.contains('open');
+    deletedActions.style.display = isOpen ? 'flex' : 'none';
   }
 }
 
@@ -583,7 +650,7 @@ function renderCategoryTimeSection(sectionKey, emoji, title, todayItems, futureI
     ? `<span class="count count-today">${todayItems.length}今日</span><span class="count">${total}</span>`
     : `<span class="count">${total}</span>`;
 
-  let itemsHtml = todayItems.map(t => renderTodoItem(t, false)).join('');
+  let itemsHtml = renderItemsWithProjectGroups(todayItems, sectionKey, false, false);
 
   if (futureItems.length > 0) {
     itemsHtml += `
@@ -592,7 +659,7 @@ function renderCategoryTimeSection(sectionKey, emoji, title, todayItems, futureI
         <span>查看更多 (${futureItems.length})</span>
       </div>
       <div class="future-items ${futureCollapsed ? 'collapsed' : ''}" data-future="${futureKey}">
-        ${futureItems.map(t => renderTodoItem(t, false)).join('')}
+        ${renderItemsWithProjectGroups(futureItems, sectionKey + '-ft', false, false)}
       </div>
     `;
   }
@@ -635,9 +702,56 @@ function renderSection(sectionKey, emoji, title, count, items, showCategoryEmoji
       <span class="count">${count}</span>
     </div>
     <div class="section-items ${collapsed ? 'collapsed' : ''}" data-section="${sectionKey}">
-      ${items.map(t => renderTodoItem(t, false, showCategoryEmoji)).join('')}
+      ${renderItemsWithProjectGroups(items, sectionKey, false, showCategoryEmoji)}
     </div>
   `;
+}
+
+// 按 project 分组渲染一组待办
+function renderItemsWithProjectGroups(items, sectionKey, isDone, showCategoryEmoji) {
+  // 分两拨：有 project 的和没有的
+  const withProject = items.filter(t => t.project);
+  const withoutProject = items.filter(t => !t.project);
+
+  // 按 project 名分组
+  const projectMap = new Map();
+  for (const t of withProject) {
+    if (!projectMap.has(t.project)) projectMap.set(t.project, []);
+    projectMap.get(t.project).push(t);
+  }
+
+  let html = '';
+
+  // 先渲染各 project 分组
+  for (const [projName, projItems] of projectMap) {
+    // 分组内按 due_date 排序
+    projItems.sort((a, b) => (a.due_date || '').localeCompare(b.due_date || ''));
+    const groupKey = sectionKey + '-proj-' + projName;
+    const collapsed = isCollapsed(groupKey);
+    html += `
+      <div class="project-group-header ${collapsed ? 'collapsed' : ''}" onclick="toggleProjectGroup('${groupKey}', this)">
+        <span class="arrow">▼</span>
+        <span>${escapeHtml(projName)}</span>
+        <span class="proj-count">${projItems.length}</span>
+      </div>
+      <div class="project-group-items ${collapsed ? 'collapsed' : ''}" data-proj="${groupKey}">
+        ${projItems.map(t => renderTodoItem(t, isDone, showCategoryEmoji)).join('')}
+      </div>
+    `;
+  }
+
+  // 再渲染无 project 的
+  html += withoutProject.map(t => renderTodoItem(t, isDone, showCategoryEmoji)).join('');
+
+  return html;
+}
+
+function toggleProjectGroup(groupKey, headerEl) {
+  const collapsed = !isCollapsed(groupKey);
+  setCollapseState(groupKey, collapsed);
+  headerEl.classList.toggle('collapsed', collapsed);
+  const items = document.querySelector(`[data-proj="${groupKey}"]`);
+  if (items) items.classList.toggle('collapsed', collapsed);
 }
 
 function renderTodoItem(todo, isDone, showCategoryEmoji = false) {
@@ -670,6 +784,10 @@ function renderTodoItem(todo, isDone, showCategoryEmoji = false) {
   if (todo.waiting_for) {
     const days = todo.waiting_since ? -daysDiff(todo.waiting_since) : 0;
     meta += `<span class="tag tag-waiting">等 ${escapeHtml(todo.waiting_for)}${days > 0 ? ` · ${days}天` : ''}</span>`;
+  }
+
+  if (todo.project) {
+    meta += `<span class="tag tag-supplier">${escapeHtml(todo.project)}</span>`;
   }
 
   if (todo.next_step) {
@@ -730,7 +848,7 @@ function openStatusMenu(event, todoId) {
   const menu = document.createElement('div');
   menu.className = 'status-menu';
 
-  const allStatuses = Object.entries(STATUS_CONFIG);
+  const allStatuses = Object.entries(STATUS_CONFIG).filter(([key]) => key !== 'deleted');
   for (const [key, cfg] of allStatuses) {
     const item = document.createElement('div');
     item.className = 'status-menu-item' + (todo.status === key ? ' active' : '');
@@ -795,7 +913,7 @@ const formCategory = document.getElementById('form-category');
 function buildStatusButtons() {
   const row = document.getElementById('form-status-row');
   row.innerHTML = '';
-  for (const [key, cfg] of Object.entries(STATUS_CONFIG)) {
+  for (const [key, cfg] of Object.entries(STATUS_CONFIG).filter(([k]) => k !== 'deleted')) {
     const btn = document.createElement('button');
     btn.type = 'button';
     btn.className = 'form-status-btn' + (selectedFormStatus === key ? ' active' : '');
@@ -809,6 +927,12 @@ function buildStatusButtons() {
   }
 }
 
+function updateProjectDatalist() {
+  const projects = [...new Set(todos.map(t => t.project).filter(Boolean))].sort();
+  const datalist = document.getElementById('project-list');
+  datalist.innerHTML = projects.map(p => `<option value="${escapeHtml(p)}">`).join('');
+}
+
 function openDetail(todoId) {
   editingTodoId = todoId;
   const todo = todos.find(t => t.id === todoId);
@@ -819,6 +943,8 @@ function openDetail(todoId) {
   buildStatusButtons();
 
   formCategory.value = todo.category;
+  document.getElementById('form-project').value = todo.project || '';
+  updateProjectDatalist();
   document.getElementById('form-title').value = todo.title;
   document.getElementById('form-date').value = todo.due_date || todayStr();
   document.getElementById('form-note').value = todo.note || '';
@@ -862,6 +988,7 @@ document.getElementById('btn-modal-save').addEventListener('click', async () => 
   const updates = {
     status: selectedFormStatus,
     category: formCategory.value,
+    project: document.getElementById('form-project').value.trim() || null,
     title: document.getElementById('form-title').value.trim(),
     due_date: document.getElementById('form-date').value || todayStr(),
     note: document.getElementById('form-note').value.trim() || null,
@@ -894,17 +1021,20 @@ document.getElementById('btn-modal-save').addEventListener('click', async () => 
   if (error) alert('保存失败: ' + error.message);
 });
 
-// 删除
+// 软删除（移到已删除）
 document.getElementById('btn-modal-delete').addEventListener('click', async () => {
   if (!editingTodoId) return;
-  if (!confirm('确定删除这条待办？')) return;
+  if (!confirm('移到已删除？')) return;
 
   const id = editingTodoId;
-  todos = todos.filter(t => t.id !== id);
-  render();
+  const todo = todos.find(t => t.id === id);
+  if (todo) {
+    todo.status = 'deleted';
+    render();
+  }
   closeModal();
 
-  await db.from('todos').delete().eq('id', id);
+  await db.from('todos').update({ status: 'deleted' }).eq('id', id);
 });
 
 // ===== 收集箱添加 =====
@@ -953,6 +1083,66 @@ document.getElementById('done-toggle').addEventListener('click', () => {
   const list = document.getElementById('done-list');
   toggle.classList.toggle('open');
   list.classList.toggle('open');
+});
+
+// ===== 已删除折叠 =====
+document.getElementById('deleted-toggle').addEventListener('click', () => {
+  const toggle = document.getElementById('deleted-toggle');
+  const list = document.getElementById('deleted-list');
+  toggle.classList.toggle('open');
+  list.classList.toggle('open');
+  const actions = document.getElementById('deleted-actions');
+  const deleted = todos.filter(t => DELETED_STATUSES.includes(t.status));
+  actions.style.display = (list.classList.contains('open') && deleted.length > 0) ? 'flex' : 'none';
+});
+
+function renderDeletedItem(todo) {
+  return `
+    <div class="todo-item done">
+      <input type="checkbox" class="deleted-check" data-id="${todo.id}">
+      <div class="todo-content">
+        <div class="todo-title">${escapeHtml(todo.title)}</div>
+        <div class="todo-meta">
+          ${todo.due_date ? `<span class="tag tag-date">${formatDate(todo.due_date)}</span>` : ''}
+          ${CATEGORY_INFO[todo.category] ? `<span class="tag tag-inbox">${CATEGORY_INFO[todo.category].emoji} ${CATEGORY_INFO[todo.category].label}</span>` : ''}
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function getSelectedDeletedIds() {
+  return Array.from(document.querySelectorAll('.deleted-check:checked')).map(cb => cb.dataset.id);
+}
+
+// 恢复选中
+document.getElementById('btn-restore-selected').addEventListener('click', async () => {
+  const ids = getSelectedDeletedIds();
+  if (ids.length === 0) { alert('请先勾选要恢复的项目'); return; }
+
+  for (const id of ids) {
+    const todo = todos.find(t => t.id === id);
+    if (todo) todo.status = 'pending';
+  }
+  render();
+
+  for (const id of ids) {
+    await db.from('todos').update({ status: 'pending' }).eq('id', id);
+  }
+});
+
+// 彻底删除选中
+document.getElementById('btn-purge-selected').addEventListener('click', async () => {
+  const ids = getSelectedDeletedIds();
+  if (ids.length === 0) { alert('请先勾选要删除的项目'); return; }
+  if (!confirm(`确定彻底删除 ${ids.length} 条待办？此操作不可恢复！`)) return;
+
+  todos = todos.filter(t => !ids.includes(t.id));
+  render();
+
+  for (const id of ids) {
+    await db.from('todos').delete().eq('id', id);
+  }
 });
 
 // ===== PWA Service Worker =====
