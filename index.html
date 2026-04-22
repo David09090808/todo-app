@@ -168,6 +168,19 @@
   }
   .btn-small:active { opacity: 0.7; }
 
+  .date-shortcuts {
+    display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px;
+  }
+  .date-shortcuts button {
+    padding: 4px 10px; font-size: 12px;
+    background: var(--border); color: var(--text-dim);
+    border: none; border-radius: 6px; cursor: pointer;
+  }
+  .date-shortcuts button:active { opacity: 0.7; }
+  .date-shortcuts button.active {
+    background: var(--accent); color: #fff;
+  }
+
   /* 已完成/已取消折叠 */
   .done-toggle {
     display: flex; align-items: center; gap: 6px;
@@ -407,6 +420,7 @@
     <div class="form-group">
       <label>日期</label>
       <input type="date" id="form-date">
+      <div class="date-shortcuts" id="date-shortcuts"></div>
     </div>
 
     <div class="form-group">
@@ -525,6 +539,59 @@ function daysDiff(dateStr) {
 function todayStr() {
   const d = new Date();
   return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+}
+
+function dateStr(d) {
+  return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+}
+
+function buildDateShortcuts() {
+  const container = document.getElementById('date-shortcuts');
+  const dayNames = ['日', '一', '二', '三', '四', '五', '六'];
+  const today = new Date();
+  const todayDay = today.getDay(); // 0=日 1=一 ... 6=六
+
+  const addDays = (base, n) => { const d = new Date(base); d.setDate(d.getDate() + n); return d; };
+
+  const shortcuts = [
+    { label: '今天', date: dateStr(today) },
+    { label: '明天', date: dateStr(addDays(today, 1)) },
+  ];
+
+  // 本周剩余工作日（后天起到周五）
+  for (let i = 2; i <= 7; i++) {
+    const d = addDays(today, i);
+    const dow = d.getDay();
+    if (dow === 0 || dow === 6) continue;
+    shortcuts.push({ label: '周' + dayNames[dow], date: dateStr(d) });
+  }
+
+  // 下周一
+  const daysToNextMon = todayDay === 0 ? 1 : (8 - todayDay);
+  shortcuts.push({ label: '下周一', date: dateStr(addDays(today, daysToNextMon)) });
+
+  container.innerHTML = '';
+  const dateInput = document.getElementById('form-date');
+
+  shortcuts.forEach(s => {
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.textContent = s.label;
+    btn._date = s.date;
+    if (dateInput.value === s.date) btn.classList.add('active');
+    btn.addEventListener('click', () => {
+      dateInput.value = s.date;
+      container.querySelectorAll('button').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+    });
+    container.appendChild(btn);
+  });
+
+  dateInput.addEventListener('change', () => {
+    container.querySelectorAll('button').forEach(b => {
+      b.classList.toggle('active', b._date === dateInput.value);
+    });
+  });
 }
 
 function tomorrowStr() {
@@ -955,6 +1022,7 @@ function openDetail(todoId) {
   document.getElementById('form-next-step').value = todo.next_step || '';
 
   updateDynamicFields();
+  buildDateShortcuts();
   modalOverlay.classList.add('open');
 }
 
